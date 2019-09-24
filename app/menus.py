@@ -355,7 +355,6 @@ class Ui_MainWindow(object):
                 self.TextEdit_cmd.moveCursor(QTextCursor.End)
             return
         self.TextEdit_cmd.append(file_inf)
-        self.TextEdit_cmd.moveCursor(QTextCursor.End)
 
     def selection_change(self, i):
         self.device_id = self.comboBoxId.currentText()
@@ -533,7 +532,6 @@ class Ui_MainWindow(object):
         self.TextEdit_cmd = QtWidgets.QTextEdit()
         self.TextEdit_cmd.setObjectName("TextEdit_cmd")
         self.TextEdit_cmd.setAlignment(Qt.AlignLeft)
-
         self.groupConsole.addWidget(self.searchLabel, 0, 0, 1, 1)
         self.groupConsole.addWidget(self.searchEdit, 0, 1, 1, 1)
         self.groupConsole.addWidget(self.searchButton, 0, 2, 1, 1)
@@ -690,6 +688,8 @@ class Ui_MainWindow(object):
         self.installButton.clicked.connect(self.batch_install_app)
         self.unintallButton.clicked.connect(self.batch_uninstall_app)
         self.stopButton.clicked.connect(self.stop_refresh)
+
+        self.searchEdit.returnPressed.connect(self.set_search)
         self.searchButton.clicked.connect(self.set_search)
 
     def retranslateUi(self, MainWindow):
