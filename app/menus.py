@@ -9,8 +9,6 @@ from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QTextCursor, QFontMetrics
 from PyQt5.QtWidgets import QFileDialog, QMessageBox, QInputDialog
-# from gevent.libev.corecffi import SIGNAL
-
 from app.Threadcontrol import MiniThread, waitThread
 
 
@@ -78,15 +76,26 @@ class Ui_MainWindow(object):
         self.search_text = ''
         # self.connect(self.searchEdit, SIGNAL("returnPressed()"), self.set_search)  # 信号绑定到槽
 
-    @staticmethod
-    def stop_refresh():
-        """ 清理所有进程 
+    # @staticmethod
+    def stop_refresh(self):
+        """ 清理所有进程
         """
         if process_list:
-            for process in process_list:
-                process.kill()
+            reply = QMessageBox.warning(self.centralWidget,
+                                        "提示",
+                                        "当前有进程正在执行，是否停止操作",
+                                        QMessageBox.Yes | QMessageBox.No)
+            if reply == QMessageBox.Yes:
+                for process in process_list:
+                    process.kill()
+                process_list.clear()
+            elif reply == QMessageBox.No:
+                return False
+        return True
+
 
     def invoke(self, cmd, background=False):
+        if not self.stop_refresh(): return
         self.comboBoxAdd()
         self.TextEdit_cmd.clear()
         if not self.device_list:
@@ -94,9 +103,6 @@ class Ui_MainWindow(object):
             return False
         self.groupCenter.setTitle("执行命令：{}".format(cmd.split('\\')[-1]))
         try:
-            if process_list:
-                for process in process_list:
-                    process.kill()
             if background:
                 Thread = MiniThread(cmd)
                 process_list.append(Thread)
@@ -200,7 +206,7 @@ class Ui_MainWindow(object):
 
     def get_id(self):
         """
-           获取设备 ID 
+           获取设备 ID
         """
         if self.mobile == 'iOS':
             return self.iOSshell('ideviceinfo', '-k UniqueDeviceID')
@@ -227,9 +233,12 @@ class Ui_MainWindow(object):
         """
          获取设备 LOG 数据
         """
-        if self.mobile == 'iOS':
-            return self.iOSshell('idevicesyslog', background=True)
-        self.adb('logcat', True)
+        try:
+            if self.mobile == 'iOS':
+                return self.iOSshell('idevicesyslog', background=True)
+            self.adb('logcat', True)
+        except Exception as E:
+            self.TextEdit_cmd.append('命令执行出错：{0}'.format(E))
 
     def get_log_crash(self):
         """
@@ -467,6 +476,9 @@ class Ui_MainWindow(object):
     def set_search(self):
         self.search_text = self.searchEdit.text()
 
+    def cmd_end(self):
+        self.TextEdit_cmd.moveCursor(QTextCursor.End)
+
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(596, 717)
@@ -476,11 +488,10 @@ class Ui_MainWindow(object):
         self.gridCentral.setObjectName("gridCentral")
 
         # 页面右侧布局批量安装等
-        self.groupBoxRight = QtWidgets.QGroupBox(self.centralWidget) # 右侧控制台 GroupBox
+        self.groupBoxRight = QtWidgets.QGroupBox(self.centralWidget)  # 右侧控制台 GroupBox
         self.groupBoxRight.setObjectName("groupBoxRight")
         self.groupGridRight = QtWidgets.QGridLayout(self.groupBoxRight)  # 右侧控制台 grid
         self.groupGridRight.setObjectName("groupConsole")
-
 
         self.label_mobile = QtWidgets.QLabel()
         self.label_mobile.setObjectName("label_mobile")
@@ -529,13 +540,19 @@ class Ui_MainWindow(object):
         self.searchButton = QtWidgets.QPushButton(self.centralWidget)
         self.searchButton.setMinimumSize(QtCore.QSize(0, 0))
         self.searchButton.setObjectName("searchButton")
+        self.endButton = QtWidgets.QPushButton(self.centralWidget)
+        self.endButton.setMinimumSize(QtCore.QSize(0, 0))
+        self.endButton.setObjectName("endButton")
+
         self.TextEdit_cmd = QtWidgets.QTextEdit()
         self.TextEdit_cmd.setObjectName("TextEdit_cmd")
         self.TextEdit_cmd.setAlignment(Qt.AlignLeft)
         self.groupConsole.addWidget(self.searchLabel, 0, 0, 1, 1)
         self.groupConsole.addWidget(self.searchEdit, 0, 1, 1, 1)
         self.groupConsole.addWidget(self.searchButton, 0, 2, 1, 1)
-        self.groupConsole.addWidget(self.TextEdit_cmd, 1, 0, 1, 3)
+        self.groupConsole.addWidget(self.endButton, 0, 3, 1, 1)
+
+        self.groupConsole.addWidget(self.TextEdit_cmd, 1, 0, 1, 4)
 
         self.gridCentral.addWidget(self.groupCenter, 0, 0, 1, 1)  # 全局布局合成
         self.gridCentral.addWidget(self.groupBoxRight, 0, 1, 1, 1)
@@ -691,6 +708,7 @@ class Ui_MainWindow(object):
 
         self.searchEdit.returnPressed.connect(self.set_search)
         self.searchButton.clicked.connect(self.set_search)
+        self.endButton.clicked.connect(self.cmd_end)
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -699,6 +717,7 @@ class Ui_MainWindow(object):
         self.searchLabel.setText(_translate("MainWindow", "输入筛选内容："))
         self.TextEdit_cmd.setText(_translate("MainWindow", "TextLabel"))
         self.searchButton.setText(_translate("MainWindow", "确认"))
+        self.endButton.setText(_translate("MainWindow", "滚动到底部"))
         self.label_right.setText(_translate("MainWindow", "批量安装：给所有连接设备批量安装APK安装包\n"
                                                           "批量卸载：卸载所有连接设备安装包"))
 
