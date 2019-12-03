@@ -4,19 +4,18 @@
 @ Description ：逻辑处理相关内容
 """
 import multiprocessing
-import subprocess
 import time
 
 from PyQt5 import QtCore
-from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtGui import QTextCursor
+from PyQt5.QtCore import pyqtSignal, QUrl
+from PyQt5.QtGui import QTextCursor, QDesktopServices
 from PyQt5.QtWidgets import QFileDialog, QMessageBox, QInputDialog
 
 from app import *
 from app.Interface import UIMainWindow
 from app.Static import VirtualKey, Variables
-from app.Utils import WaitThread
 from app.Utils import Command
+from app.Utils import WaitThread
 
 multiprocessing.freeze_support()
 
@@ -254,7 +253,7 @@ class MainWindow(Command, UIMainWindow):
                                     "是否确认清理缓存日志，清理缓存日志后之前所有日志将不可恢复",
                                     QMessageBox.Yes | QMessageBox.No)
         if reply == QMessageBox.Yes:
-            return self.invoke(self.clear_log())
+            return self.invoke(self.clear_logcat())
 
     def get_top(self):
         if self.mobile == Variables.iOS:
@@ -278,10 +277,7 @@ class MainWindow(Command, UIMainWindow):
             if end_str == 'finish':
                 if os.path.exists(path):
                     self.Terminal.append('截图成功,截图已保存在：{}'.format(path))
-                    if os.name == 'nt':
-                        os.system('explorer.exe "{}"'.format(path))
-                    else:
-                        os.system('open "{}"'.format(path))
+                    QDesktopServices.openUrl(QUrl.fromLocalFile(path))
             else:
                 self.Terminal.append('{}'.format(end_str))
 

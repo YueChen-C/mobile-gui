@@ -5,9 +5,10 @@
 import os
 import sys
 
+path = os.environ.get('PATH') if not os.environ.get('GUI') else os.environ.get('PATH') + ':' + os.environ.get('GUI')
+
 
 def find_executable(executable, ENVIRON_PATH):
-    path = os.environ['PATH']
     paths = path.split(os.pathsep)
     if ENVIRON_PATH:
         paths.append(ENVIRON_PATH)
@@ -67,7 +68,8 @@ if not os.path.exists(APPLICATION_PATH):
 
 
 def check_environ():
-    environ = ['adb', 'idevice_id', 'scrcpy', 'ideviceinfo', 'idevicesyslog', 'idevicescreenshot', 'ideviceinstaller', 'idevicecrashreport']
+    environ = ['adb', 'idevice_id', 'scrcpy', 'ideviceinfo', 'idevicesyslog', 'idevicescreenshot', 'ideviceinstaller',
+               'idevicecrashreport']
 
     for i in environ:
         if find_executable(i, ENVIRON_PATH) is None:

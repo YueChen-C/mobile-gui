@@ -69,7 +69,7 @@ class Command:
         return self.shell(['pm', 'path', app])
 
     def pid(self, app):
-        return self.shell(['"ps | grep -m1 {} '.format(app)])
+        return self.shell(['ps | grep -m1 {} '.format(app)])
 
     def export(self, package):
         return [Environ.adb, '-s', self.device_id, 'exec-out', 'cat {}'.format(package)]
@@ -77,7 +77,7 @@ class Command:
     def clear_cache(self, app):
         return self.shell(['pm', 'clear', app])
 
-    def clear_log(self):
+    def clear_logcat(self):
         return [Environ.adb, '-s', self.device_id, 'logcat', '-c']
 
     def ip(self):
@@ -95,7 +95,7 @@ class Command:
 
 class WaitThread(QThread):
     """
-    可自动结束线程
+    多任务后台进程
     """
     waitSinOut = pyqtSignal(str)  # 自定义 str 类型信号
     waitSinOutBytes = pyqtSignal(bytes)  # 自定义 bytes 类型信号

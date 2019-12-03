@@ -111,8 +111,11 @@ class UIMainWindow():
         # 注册工具栏
         self.sysToolBar = QtWidgets.QToolBar(MainWindow)
         self.sysToolBar.setObjectName("toolBar")
+        self.sysToolBar.setMovable(False)
         self.mobileToolBar = QtWidgets.QToolBar(MainWindow)
         self.mobileToolBar.setObjectName("mobileToolBar")
+        self.mobileToolBar.setMovable(False)
+
         MainWindow.addToolBar(QtCore.Qt.LeftToolBarArea, self.sysToolBar)
         MainWindow.addToolBar(QtCore.Qt.LeftToolBarArea, self.mobileToolBar)
 

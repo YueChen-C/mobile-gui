@@ -6,6 +6,8 @@ import os
 import sys
 from os.path import abspath, dirname
 
+from PyQt5 import QtGui
+
 from app import check_environ
 
 sys.path.insert(0, abspath(dirname(abspath(__file__)) + '/..'))
@@ -61,10 +63,13 @@ def main():
     window = QMainWindow()
     window.setObjectName('mainwindow')
     ui = MainWindow()
+    icon = QtGui.QIcon()
+    icon.addPixmap(QtGui.QPixmap("mobile.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+    window.setWindowIcon(icon)
     try:
         ui.setupUi(window)
         ui.comboBoxAdd()
-        window.setWindowTitle("Mobile Tool v1.0.0")
+        window.setWindowTitle("Mobile Tool v2.0.1")
         read_settings(window, args.reset)
         window.showMaximized()
         check_environ()
