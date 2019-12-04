@@ -97,24 +97,24 @@ class WaitThread(QThread):
     """
     多任务后台进程
     """
-    waitSinOut = pyqtSignal(str)  # 自定义 str 类型信号
+    waitSinOutStr = pyqtSignal(str)  # 自定义 str 类型信号
     waitSinOutBytes = pyqtSignal(bytes)  # 自定义 bytes 类型信号
 
-    def __init__(self, cmd, Terminal, massage, decode=True):
+    def __init__(self, cmd, massage=None, decode=True):
         super().__init__()
         self._kill = True
         self.cmd = cmd
-        self.Terminal = Terminal
         self.massage = massage
         self.decode = decode
 
     def run(self):
         process = None
         try:
-            self.Terminal.appendPlainText('任务：{}'.format(self.massage))
-            self.Terminal.moveCursor(QTextCursor.End)
+
+            if self.massage:
+                self.waitSinOutStr.emit(str('任务：{}'.format(self.massage)))
             cmd_str = ' '.join(self.cmd) if isinstance(self.cmd, list) else self.cmd
-            self.Terminal.appendPlainText('正在执行命令: {}'.format(cmd_str))
+            self.waitSinOutStr.emit(str('正在执行命令: {}'.format(cmd_str)))
             process = QtCore.QProcess()
             process.start(self.cmd[0], self.cmd[1:])
             process.waitForFinished()
@@ -122,17 +122,16 @@ class WaitThread(QThread):
             output = process.readAllStandardOutput()
             if errors:
                 errors = str(errors, encoding='utf-8')
-                self.waitSinOut.emit(errors)
+                self.waitSinOutStr.emit(errors)
             if output:
                 if self.decode:
                     output = str(output, encoding='utf-8')
-                    self.waitSinOut.emit(str(output))
+                    self.waitSinOutStr.emit(str(output))
                 else:
                     self.waitSinOutBytes.emit(bytes(output))
-            self.waitSinOut.emit(str('finish'))
-
-            self.Terminal.appendPlainText('任务：{} 已完成'.format(self.massage))
-            self.Terminal.moveCursor(QTextCursor.End)
+            self.waitSinOutStr.emit(str('finish'))
+            if self.massage:
+                self.waitSinOutStr.emit('任务：{} 已完成'.format(self.massage))
             process.close()
             if self in PROCESS_LIST:
                 PROCESS_LIST.remove(self)

@@ -53,6 +53,7 @@ class MainWindow(Command, UIMainWindow):
             return
         else:
             devices = str(devices, encoding='utf-8')
+            self.Terminal.appendPlainText(devices)
 
         androidevices_list = []
         if self.mobile == Variables.Android:
@@ -165,9 +166,9 @@ class MainWindow(Command, UIMainWindow):
             self.Terminal.appendPlainText('Android 版本小于 5.0 设备无法开启画面同步功能')
             return
         self.Terminal.appendPlainText(VirtualKey)
-        Thread = WaitThread(self.scrcpy(), self.Terminal, '开启手机控制')
+        Thread = WaitThread(self.scrcpy(), '开启手机控制')
         PROCESS_LIST.append(Thread)
-        Thread.waitSinOut.connect(self.data_ready)
+        Thread.waitSinOutStr.connect(self.data_ready)
         Thread.start()
 
     def get_version(self):
@@ -240,9 +241,9 @@ class MainWindow(Command, UIMainWindow):
                                         "是否确认是否导出 iOS 崩溃日志，导出后手机内日志将清除。",
                                         QMessageBox.Yes | QMessageBox.No)
             if reply == QMessageBox.Yes:
-                Thread = WaitThread(cmd, self.Terminal, '正在导出崩溃日志')
+                Thread = WaitThread(cmd, '正在导出崩溃日志')
                 PROCESS_LIST.append(Thread)
-                Thread.waitSinOut.connect(self.data_ready)
+                Thread.waitSinOutStr.connect(self.data_ready)
                 Thread.start()
                 return
         return self.invoke(cmd, background=True)
@@ -281,10 +282,10 @@ class MainWindow(Command, UIMainWindow):
             else:
                 self.Terminal.appendPlainText('{}'.format(end_str))
 
-        Thread = WaitThread(self.screencap(path), self.Terminal, '正在获取 {} 设备截图'.format(self.device_id), decode=False)
+        Thread = WaitThread(self.screencap(path), '正在获取 {} 设备截图'.format(self.device_id), decode=False)
         PROCESS_LIST.append(Thread)
         Thread.waitSinOutBytes.connect(save_png)
-        Thread.waitSinOut.connect(is_save)
+        Thread.waitSinOutStr.connect(is_save)
         Thread.start()
 
     def get_list_packages(self):
@@ -338,9 +339,9 @@ class MainWindow(Command, UIMainWindow):
             openfile_name = QFileDialog.getOpenFileName(self.centralWidget, '选择文件', '', 'Excel files(*.apk)')
         if openfile_name[0]:
             cmd = self.install(openfile_name[0])
-            Thread = WaitThread(cmd, self.Terminal, '{0} 设备正在安装应用 {1},请稍后...'.format(self.device_id, openfile_name[0]))
+            Thread = WaitThread(cmd, '{0} 设备正在安装应用 {1},请稍后...'.format(self.device_id, openfile_name[0]))
             PROCESS_LIST.append(Thread)
-            Thread.waitSinOut.connect(self.data_ready)
+            Thread.waitSinOutStr.connect(self.data_ready)
             Thread.start()
 
     def export_app(self):
@@ -360,7 +361,7 @@ class MainWindow(Command, UIMainWindow):
             package = self.invoke(self.app_path(app))
             if isinstance(package, str):
                 package = package.split(':')[1].strip()
-                Thread = WaitThread(self.export(package), self.Terminal, '{0} 设备正在导出应用 {1} 安装包'.format(self.device_id, app), decode=False)
+                Thread = WaitThread(self.export(package), '{0} 设备正在导出应用 {1} 安装包'.format(self.device_id, app), decode=False)
                 PROCESS_LIST.append(Thread)
                 Thread.waitSinOutBytes.connect(seve_apk)
                 Thread.start()
@@ -410,9 +411,9 @@ class MainWindow(Command, UIMainWindow):
             self.Terminal.appendPlainText('请勿操作等待软件安装')
             for device in self.device_list:
                 cmd = self.install(openfile_name[0], device)
-                Thread = WaitThread(cmd, self.Terminal, '开始安装设备 {}'.format(device))
+                Thread = WaitThread(cmd, '开始安装设备 {}'.format(device))
                 PROCESS_LIST.append(Thread)
-                Thread.waitSinOut.connect(self.data_ready)
+                Thread.waitSinOutStr.connect(self.data_ready)
                 Thread.start()
 
     def batch_uninstall_app(self):
@@ -425,9 +426,9 @@ class MainWindow(Command, UIMainWindow):
         if app:
             for device in self.device_list:
                 cmd = self.uninstall(app, device)
-                Thread2 = WaitThread(cmd, self.Terminal, '{0} 设备正在删除应用 {1}'.format(device, app))
+                Thread2 = WaitThread(cmd, '{0} 设备正在删除应用 {1}'.format(device, app))
                 PROCESS_LIST.append(Thread2)
-                Thread2.waitSinOut.connect(self.data_ready)
+                Thread2.waitSinOutStr.connect(self.data_ready)
                 Thread2.start()
 
     def app_list(self):
