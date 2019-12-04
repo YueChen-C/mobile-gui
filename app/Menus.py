@@ -38,7 +38,7 @@ class MainWindow(Command, UIMainWindow):
     def check_device(self):
         self.comboBoxAdd()
         if not self.device_list:
-            self.Terminal.setText('命令执行失败，当前没有连接设备，请点击右侧"获取设备"按钮，尝试获取设备。')
+            self.Terminal.appendPlainText('命令执行失败，当前没有连接设备，请点击右侧"获取设备"按钮，尝试获取设备。')
             return False
         return True
 
@@ -49,7 +49,7 @@ class MainWindow(Command, UIMainWindow):
         my_process.waitForFinished()
         devices = my_process.readAllStandardOutput()
         if not devices:
-            self.Terminal.append('获取设备列表失败')
+            self.Terminal.appendPlainText('获取设备列表失败')
             return
         else:
             devices = str(devices, encoding='utf-8')
@@ -85,12 +85,12 @@ class MainWindow(Command, UIMainWindow):
         except:
             data = str(self.process.readAll())
         if 'total' in data and 'running' in data:
-            self.Terminal.append('\n')
+            self.Terminal.appendPlainText('\n')
         if self.search_text:
             if self.search_text in data:
-                self.Terminal.append(data)
+                self.Terminal.appendPlainText(data)
             return
-        self.Terminal.append(data)
+        self.Terminal.appendPlainText(data)
 
     def data_ready(self, data):
         """ 将消息流数据打印到窗口
@@ -99,12 +99,12 @@ class MainWindow(Command, UIMainWindow):
         """
         if self.search_text:
             if self.search_text in data:
-                self.Terminal.append(data)
+                self.Terminal.appendPlainText(data)
             return
-        self.Terminal.append(data)
+        self.Terminal.appendPlainText(data)
 
     def process_finished(self):
-        self.Terminal.append('获取数据失败,请检查相关设备连接情况')
+        self.Terminal.appendPlainText('获取数据失败,请检查相关设备连接情况')
         if self.process:
             self.process.close()
             self.process = None
@@ -118,13 +118,13 @@ class MainWindow(Command, UIMainWindow):
         # if not self.stop_refresh(): return
         # self.comboBoxAdd()
         if not self.device_list:
-            self.Terminal.append('命令执行失败，当前没有连接设备，请点击右侧"获取设备"按钮，尝试获取设备。')
+            self.Terminal.appendPlainText('命令执行失败，当前没有连接设备，请点击右侧"获取设备"按钮，尝试获取设备。')
             return False
         try:
             if not self.stop_refresh(): return
             cmd_str = ' '.join(cmd) if isinstance(cmd, list) else cmd
             self.groupCenter.setTitle("执行命令：{}".format(cmd_str))
-            self.Terminal.append('正在执行命令: {}'.format(cmd_str))
+            self.Terminal.appendPlainText('正在执行命令: {}'.format(cmd_str))
             if background:
                 self.process = QtCore.QProcess()
                 self.process.start(cmd[0], cmd[1:])
@@ -138,13 +138,13 @@ class MainWindow(Command, UIMainWindow):
                 output = my_process.readAllStandardOutput()
                 if errors:
                     errors = str(errors, encoding='utf-8')
-                    self.Terminal.append('命令执行执行失败：{0}'.format(errors))
+                    self.Terminal.appendPlainText('命令执行执行失败：{0}'.format(errors))
                     return False
                 if output:
                     if decode:
                         output = str(output, encoding='utf-8')
-                        self.Terminal.append('执行结果：')
-                        self.Terminal.append(output)
+                        self.Terminal.appendPlainText('执行结果：')
+                        self.Terminal.appendPlainText(output)
                         self.Terminal.moveCursor(QTextCursor.End)
                     else:
                         output = bytes(output)
@@ -153,7 +153,7 @@ class MainWindow(Command, UIMainWindow):
                 my_process.close()
                 return True
         except Exception as E:
-            self.Terminal.append('命令执行出错：{0}'.format(E))
+            self.Terminal.appendPlainText('命令执行出错：{0}'.format(E))
             return False
 
     def android_control(self):
@@ -162,9 +162,9 @@ class MainWindow(Command, UIMainWindow):
         if not self.check_device(): return
 
         if int(self.get_version().split('.')[0]) <= 5:
-            self.Terminal.append('Android 版本小于 5.0 设备无法开启画面同步功能')
+            self.Terminal.appendPlainText('Android 版本小于 5.0 设备无法开启画面同步功能')
             return
-        self.Terminal.append(VirtualKey)
+        self.Terminal.appendPlainText(VirtualKey)
         Thread = WaitThread(self.scrcpy(), self.Terminal, '开启手机控制')
         PROCESS_LIST.append(Thread)
         Thread.waitSinOut.connect(self.data_ready)
@@ -193,7 +193,7 @@ class MainWindow(Command, UIMainWindow):
           获取设备 IP 地址
         """
         if self.mobile == 'iOS':
-            return self.Terminal.setText('iOS 暂时不支持此方法')
+            return self.Terminal.appendPlainText('iOS 暂时不支持此方法')
 
         return self.invoke(self.ip())
 
@@ -208,7 +208,7 @@ class MainWindow(Command, UIMainWindow):
         获取设备 displays
         """
         if self.mobile == 'iOS':
-            return self.Terminal.setText('iOS 暂时不支持此方法')
+            return self.Terminal.appendPlainText('iOS 暂时不支持此方法')
         return self.invoke(self.displays())
 
     def get_mac(self):
@@ -224,7 +224,7 @@ class MainWindow(Command, UIMainWindow):
         try:
             return self.invoke(self.log(), background=True)
         except Exception as E:
-            self.Terminal.append('命令执行出错：{0}'.format(E))
+            self.Terminal.appendPlainText('命令执行出错：{0}'.format(E))
 
     def get_log_crash(self):
         """
@@ -257,7 +257,7 @@ class MainWindow(Command, UIMainWindow):
 
     def get_top(self):
         if self.mobile == Variables.iOS:
-            return self.Terminal.setText('iOS 暂时不支持此方法')
+            return self.Terminal.appendPlainText('iOS 暂时不支持此方法')
         return self.invoke(self.top(), background=True)
 
     def get_screencap(self):
@@ -276,10 +276,10 @@ class MainWindow(Command, UIMainWindow):
         def is_save(end_str):
             if end_str == 'finish':
                 if os.path.exists(path):
-                    self.Terminal.append('截图成功,截图已保存在：{}'.format(path))
+                    self.Terminal.appendPlainText('截图成功,截图已保存在：{}'.format(path))
                     QDesktopServices.openUrl(QUrl.fromLocalFile(path))
             else:
-                self.Terminal.append('{}'.format(end_str))
+                self.Terminal.appendPlainText('{}'.format(end_str))
 
         Thread = WaitThread(self.screencap(path), self.Terminal, '正在获取 {} 设备截图'.format(self.device_id), decode=False)
         PROCESS_LIST.append(Thread)
@@ -297,14 +297,14 @@ class MainWindow(Command, UIMainWindow):
         获取 APP PID
         """
         if self.mobile == Variables.iOS:
-            return self.Terminal.setText('iOS 暂时不支持此方法')
+            return self.Terminal.appendPlainText('iOS 暂时不支持此方法')
         app = self.app_list()
         if app:
             pid = self.invoke(self.pid(app))
             if isinstance(pid, bool):
-                self.Terminal.append('{0} 应用未启动'.format(app))
+                self.Terminal.appendPlainText('{0} 应用未启动'.format(app))
             else:
-                self.Terminal.append('{0} 应用 PID 为：{1}'.format(app, pid.split()[1]))
+                self.Terminal.appendPlainText('{0} 应用 PID 为：{1}'.format(app, pid.split()[1]))
 
     def clear_app_cache(self):
         """ 清理 APP 缓存 （Android）
@@ -312,7 +312,7 @@ class MainWindow(Command, UIMainWindow):
         app = self.app_list()
         if app:
             if self.invoke(self.clear_cache(app)):
-                self.Terminal.append('{} 应用缓存已重置'.format(app))
+                self.Terminal.appendPlainText('{} 应用缓存已重置'.format(app))
 
     def uninstall_app(self):
         """
@@ -322,9 +322,9 @@ class MainWindow(Command, UIMainWindow):
 
         app = self.app_list()
         if app:
-            self.Terminal.append('设备：{0} 正在删除应用 {1}'.format(self.device_id, app))
+            self.Terminal.appendPlainText('设备：{0} 正在删除应用 {1}'.format(self.device_id, app))
             if self.invoke(self.uninstall(app)):
-                self.Terminal.append('{} 应用已卸载'.format(app))
+                self.Terminal.appendPlainText('{} 应用已卸载'.format(app))
 
     def install_app(self):
         """
@@ -383,13 +383,13 @@ class MainWindow(Command, UIMainWindow):
             self.device_id = ''
             self.device_list = []
             self.comboBoxId.clear()
-            self.Terminal.setText('当前没有连接设备，请检查设备设备是否连接')
+            self.Terminal.appendPlainText('当前没有连接设备，请检查设备设备是否连接')
             return
         if self.comboBoxId.currentText() and self.comboBoxId.currentText() in devices:
             try:
                 list_index = devices.index(self.comboBoxId.currentText())
             except Exception as E:
-                self.Terminal.setText('获取设备信息报错：{}'.format(E))
+                self.Terminal.appendPlainText('获取设备信息报错：{}'.format(E))
         self.comboBoxId.clear()
         self.comboBoxId.addItems(devices)
         self.comboBoxId.setCurrentIndex(list_index)
@@ -406,8 +406,8 @@ class MainWindow(Command, UIMainWindow):
         else:
             openfile_name = QFileDialog.getOpenFileName(self.centralWidget, '选择文件', '', 'Excel files(*.apk)')
         if openfile_name[0]:
-            self.Terminal.append('开始安装：{}'.format(openfile_name[0]))
-            self.Terminal.append('请勿操作等待软件安装')
+            self.Terminal.appendPlainText('开始安装：{}'.format(openfile_name[0]))
+            self.Terminal.appendPlainText('请勿操作等待软件安装')
             for device in self.device_list:
                 cmd = self.install(openfile_name[0], device)
                 Thread = WaitThread(cmd, self.Terminal, '开始安装设备 {}'.format(device))
@@ -436,7 +436,7 @@ class MainWindow(Command, UIMainWindow):
             with open(INI_PATH, 'r') as applist:
                 items = list(map(lambda x: x.strip('\n'), applist))
         except Exception as E:
-            self.Terminal.setText('{}'.format(E))
+            self.Terminal.appendPlainText('{}'.format(E))
             return
         value, ok = QInputDialog.getItem(self.centralWidget, "选择应用", "请选择应用的包名", items, 1, True)  # 选择确认框
         if ok:

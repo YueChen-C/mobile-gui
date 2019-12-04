@@ -111,10 +111,10 @@ class WaitThread(QThread):
     def run(self):
         process = None
         try:
-            self.Terminal.append('任务：{}'.format(self.massage))
+            self.Terminal.appendPlainText('任务：{}'.format(self.massage))
             self.Terminal.moveCursor(QTextCursor.End)
             cmd_str = ' '.join(self.cmd) if isinstance(self.cmd, list) else self.cmd
-            self.Terminal.append('正在执行命令: {}'.format(cmd_str))
+            self.Terminal.appendPlainText('正在执行命令: {}'.format(cmd_str))
             process = QtCore.QProcess()
             process.start(self.cmd[0], self.cmd[1:])
             process.waitForFinished()
@@ -131,13 +131,13 @@ class WaitThread(QThread):
                     self.waitSinOutBytes.emit(bytes(output))
             self.waitSinOut.emit(str('finish'))
 
-            self.Terminal.append('任务：{} 已完成'.format(self.massage))
+            self.Terminal.appendPlainText('任务：{} 已完成'.format(self.massage))
             self.Terminal.moveCursor(QTextCursor.End)
             process.close()
             if self in PROCESS_LIST:
                 PROCESS_LIST.remove(self)
         except Exception as e:
-            self.Terminal.append('任务报错 {}'.format(e))
+            self.Terminal.appendPlainText('任务报错 {}'.format(e))
         finally:
             if process:
                 process.close()

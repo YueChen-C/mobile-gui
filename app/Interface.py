@@ -81,9 +81,9 @@ class UIMainWindow():
         self.endButton.setMinimumSize(QtCore.QSize(0, 0))
         self.endButton.setObjectName("endButton")
 
-        self.Terminal = QtWidgets.QTextEdit()
+        self.Terminal = QtWidgets.QPlainTextEdit()
         self.Terminal.setObjectName("Terminal")
-        self.Terminal.setAlignment(Qt.AlignLeft)
+        self.Terminal.setMaximumBlockCount(50000)
         self.groupConsole.addWidget(self.searchLabel, 0, 0, 1, 1)
         self.groupConsole.addWidget(self.searchEdit, 0, 1, 1, 1)
         self.groupConsole.addWidget(self.searchButton, 0, 2, 1, 1)
@@ -263,7 +263,6 @@ class UIMainWindow():
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
         self.groupCenter.setTitle(_translate("MainWindow", "执行命令: "))
         self.searchLabel.setText(_translate("MainWindow", "输入过滤内容："))
-        self.Terminal.setText(_translate("MainWindow", ""))
         self.searchButton.setText(_translate("MainWindow", "确认"))
         self.endButton.setText(_translate("MainWindow", "滚动到底部"))
         self.label_right.setText(_translate("MainWindow", "批量安装：给所有连接设备批量安装APK安装包\n"
