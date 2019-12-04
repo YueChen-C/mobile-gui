@@ -21,13 +21,12 @@ exe = EXE(pyz,
           a.scripts,
           [],
           exclude_binaries=True,
-          name='main',
+          name='Mobile-GUI',
           debug=False,
           bootloader_ignore_signals=False,
           strip=False,
           upx=True,
-          console=False,
-          icon='mobile.ico')
+          console=False)
 
 coll = COLLECT(exe,
                a.binaries,
@@ -38,10 +37,10 @@ coll = COLLECT(exe,
                upx_exclude=[],
                name='Mobile-GUI')
 app = BUNDLE(coll,
-             name='mobile.app',
-             icon=None,
+             name='Mobile-GUI.app',
+             icon='mobile.icns',
              bundle_identifier=None,
              info_plist={
              'NSHighResolutionCapable': 'True',
-             # 'LSEnvironment':{'GUI':'/usr/local/bin:/Users/tools/android-sdk/tools:/Users/tools/android-sdk/platform-tools'} # 该行是环境变量选填，避免打包后 mac gui 程序无法引用环境变量问题
+             'LSEnvironment':{'GUI':'/usr/local/bin:/Users/tools/android-sdk/tools:'} # 该行是环境变量选填，避免打包后 mac gui 程序无法引用环境变量问题
              })

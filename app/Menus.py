@@ -231,10 +231,10 @@ class MainWindow(Command, UIMainWindow):
          获取设备 Crash LOG 数据
         """
         if not self.check_device(): return
-        self.stop_refresh()
         cmd = self.crash_log(CRASHLOG_PATH)
 
         if self.mobile == Variables.iOS:
+            self.stop_refresh()
             reply = QMessageBox.warning(self.centralWidget,
                                         "获取崩溃日志",
                                         "是否确认是否导出 iOS 崩溃日志，导出后手机内日志将清除。",

@@ -70,10 +70,12 @@ if not os.path.exists(APPLICATION_PATH):
 def check_environ():
     environ = ['adb', 'idevice_id', 'scrcpy', 'ideviceinfo', 'idevicesyslog', 'idevicescreenshot', 'ideviceinstaller',
                'idevicecrashreport']
-
+    error = []
     for i in environ:
         if find_executable(i, ENVIRON_PATH) is None:
-            raise Exception('缺少环境变量：{}'.format(i))
+            error.append(i)
+    if error:
+        raise Exception('未找到环境变量：{}'.format(','.join(error)))
 
 
 class Environ:

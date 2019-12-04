@@ -9,7 +9,7 @@ pyqt5 编写的 可运行在 win、mac ，包含 iOS 和 Android 设备 GUI 命�
 - 以安装软件导出成 APK
 - 批量安装卸载 
 
-###运行项目
+### 运行项目
 app.ini  按需配置自己常用 App 包名
 
 win 运行需要安装 iTunes
@@ -29,7 +29,7 @@ python ./app/Main.py
 
 
 
-###打包项目
+### 打包项目
 打包成 EXE,mac执行文件
 
 ```
