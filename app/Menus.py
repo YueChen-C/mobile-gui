@@ -391,10 +391,11 @@ class MainWindow(Command, UIMainWindow):
                 list_index = devices.index(self.comboBoxId.currentText())
             except Exception as E:
                 self.Terminal.appendPlainText('获取设备信息报错：{}'.format(E))
-        self.comboBoxId.clear()
-        self.comboBoxId.addItems(devices)
-        self.comboBoxId.setCurrentIndex(list_index)
-        self.device_list = devices
+        if self.device_list != devices:
+            self.comboBoxId.clear()
+            self.comboBoxId.addItems(devices)
+            self.comboBoxId.setCurrentIndex(list_index)
+            self.device_list = devices
 
     def batch_install_app(self):
         """
