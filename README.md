@@ -13,7 +13,7 @@ pyqt5 编写的 可运行在 win、mac ，包含 iOS 和 Android 设备 GUI 命�
 ### 运行项目
 app.ini  按需配置自己常用 App 包名
 
-需要 ADB 建议使用版本 1.40 以上
+需要 ADB 加入环境变量,且建议使用版本 1.40 以上
 
 win 运行需要安装 iTunes
 
@@ -36,6 +36,7 @@ python ./app/Main.py
 打包成 EXE,mac执行文件
 
 ```
+> pip install pyinstaller
 # 在 win 下打包成 .EXE
 pyinstaller Main_win.spec 
 # 在 mac 下打包成 .app
